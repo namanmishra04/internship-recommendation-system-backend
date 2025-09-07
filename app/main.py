@@ -203,6 +203,20 @@ def populate_dummy_data(db: Session = Depends(get_db)):
     
     return {"message": f"Successfully created {created_count} dummy internships"}
 
+@app.delete("/api/clear-database")
+def clear_database(db: Session = Depends(get_db)):
+    """
+    WARNING: Deletes all data from all tables. Use only for development/testing!
+    """
+    try:
+        db.query(models.Internship).delete()
+        db.commit()
+        return {"message": "All internship entries deleted"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
